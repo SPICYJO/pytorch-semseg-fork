@@ -2,12 +2,12 @@ model:
     arch: fcn8s
 data:
     dataset: pascal
-    train_split: train
+    train_split: train_aug
     val_split: val
     img_rows: 'same'
     img_cols: 'same'
-    path: /home/robotics/neJo/VOCdevkit/VOC2012/
-    sbd_path: /home/robotics/neJo/benchmark_RELEASE/
+    path: /private/home/meetshah/datasets/VOC/060817/VOCdevkit/VOC2012/
+    sbd_path: /private/home/meetshah/datasets/VOC/benchmark_RELEASE/
 training:
     train_iters: 300000
     batch_size: 1

@@ -28,12 +28,17 @@ def test(args):
     # Setup image
     print("Read Input Image from : {}".format(args.img_path))
     img = misc.imread(args.img_path)
+    print(img.shape)
+    img = np.stack((img,)*3, axis=-1)
+    print(img.shape)
+    
 
     data_loader = get_loader(args.dataset)
     loader = data_loader(root=None, is_transform=True, img_norm=args.img_norm, test_mode=True)
     n_classes = loader.n_classes
 
     resized_img = misc.imresize(img, (loader.img_size[0], loader.img_size[1]), interp="bicubic")
+    #img = resized_img
 
     orig_size = img.shape[:-1]
     if model_name in ["pspnet", "icnet", "icnetBN"]:
@@ -43,6 +48,7 @@ def test(args):
         img = misc.imresize(img, (loader.img_size[0], loader.img_size[1]))
 
     img = img[:, :, ::-1]
+    #print(img.size)
     img = img.astype(np.float64)
     img -= loader.mean
     if args.img_norm:
@@ -53,13 +59,19 @@ def test(args):
     img = np.expand_dims(img, 0)
     img = torch.from_numpy(img).float()
 
+
     # Setup Model
     model_dict = {"arch": model_name}
     model = get_model(model_dict, n_classes, version=args.dataset)
+    print("good1")
     state = convert_state_dict(torch.load(args.model_path)["model_state"])
+    print("good2")
     model.load_state_dict(state)
+    print("good3")
     model.eval()
     model.to(device)
+
+    print("good")
 
     images = img.to(device)
     outputs = model(images)

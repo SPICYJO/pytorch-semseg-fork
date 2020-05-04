@@ -6,7 +6,7 @@ data:
     val_split: val
     img_rows: 'same'
     img_cols: 'same'
-    path: /home/robotics/neJo/VOCdevkit/VOC2012/
+    path: /home/robotics/neJo/Bone_loss/
     sbd_path: /home/robotics/neJo/benchmark_RELEASE/
 training:
     train_iters: 300000
@@ -20,7 +20,7 @@ training:
         weight_decay: 0.0005
         momentum: 0.99
     loss:
-        name: 'cross_entropy'
+        name: 'bootstrapped_cross_entropy'
         size_average: False
     lr_schedule:
     resume: fcn8s_pascal_best_model.pkl

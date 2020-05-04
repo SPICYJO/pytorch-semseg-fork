@@ -44,8 +44,9 @@ class pascalVOCLoader(data.Dataset):
     def __init__(
         self,
         root,
-        sbd_path=None,
-        split="train_aug",
+        sbd_path="/home/robotics/neJo/benchmark_RELEASE/",
+        #split="train_aug",
+        split="train",
         is_transform=False,
         img_size=512,
         augmentations=None,
@@ -53,19 +54,19 @@ class pascalVOCLoader(data.Dataset):
         test_mode=False,
     ):
         self.root = root
-        self.sbd_path = sbd_path
+        #self.sbd_path = sbd_path
         self.split = split
         self.is_transform = is_transform
         self.augmentations = augmentations
         self.img_norm = img_norm
         self.test_mode = test_mode
-        self.n_classes = 21
+        self.n_classes = 2
         self.mean = np.array([104.00699, 116.66877, 122.67892])
         self.files = collections.defaultdict(list)
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
 
         if not self.test_mode:
-            for split in ["train", "val", "trainval"]:
+            for split in ["train", "val"]:
                 path = pjoin(self.root, "ImageSets/Segmentation", split + ".txt")
                 file_list = tuple(open(path, "r"))
                 file_list = [id_.rstrip() for id_ in file_list]
@@ -84,7 +85,7 @@ class pascalVOCLoader(data.Dataset):
 
     def __getitem__(self, index):
         im_name = self.files[self.split][index]
-        im_path = pjoin(self.root, "JPEGImages", im_name + ".jpg")
+        im_path = pjoin(self.root, "JPEGImages", im_name + ".png")
         lbl_path = pjoin(self.root, "SegmentationClass/pre_encoded", im_name + ".png")
         im = Image.open(im_path)
         lbl = Image.open(lbl_path)
@@ -192,14 +193,14 @@ class pascalVOCLoader(data.Dataset):
         function also defines the `train_aug` and `train_aug_val` data splits
         according to the description in the class docstring
         """
-        sbd_path = self.sbd_path
+        #sbd_path = self.sbd_path
         target_path = pjoin(self.root, "SegmentationClass/pre_encoded")
         if not os.path.exists(target_path):
             os.makedirs(target_path)
-        path = pjoin(sbd_path, "dataset/train.txt")
-        sbd_train_list = tuple(open(path, "r"))
-        sbd_train_list = [id_.rstrip() for id_ in sbd_train_list]
-        train_aug = self.files["train"] + sbd_train_list
+        #path = pjoin(sbd_path, "dataset/train.txt")
+        #sbd_train_list = tuple(open(path, "r"))
+        #sbd_train_list = [id_.rstrip() for id_ in sbd_train_list]
+        train_aug = self.files["train"] 
 
         # keep unique elements (stable)
         train_aug = [train_aug[i] for i in sorted(np.unique(train_aug, return_index=True)[1])]
@@ -211,13 +212,13 @@ class pascalVOCLoader(data.Dataset):
         expected = np.unique(self.files["train_aug"] + self.files["val"]).size
 
         if len(pre_encoded) != expected:
-            print("Pre-encoding segmentation masks...")
-            for ii in tqdm(sbd_train_list):
-                lbl_path = pjoin(sbd_path, "dataset/cls", ii + ".mat")
-                data = io.loadmat(lbl_path)
-                lbl = data["GTcls"][0]["Segmentation"][0].astype(np.int32)
-                lbl = m.toimage(lbl, high=lbl.max(), low=lbl.min())
-                m.imsave(pjoin(target_path, ii + ".png"), lbl)
+        #     print("Pre-encoding segmentation masks...")
+        #     for ii in tqdm(sbd_train_list):
+        #         lbl_path = pjoin(sbd_path, "dataset/cls", ii + ".mat")
+        #         data = io.loadmat(lbl_path)
+        #         lbl = data["GTcls"][0]["Segmentation"][0].astype(np.int32)
+        #         lbl = m.toimage(lbl, high=lbl.max(), low=lbl.min())
+        #         m.imsave(pjoin(target_path, ii + ".png"), lbl)
 
             for ii in tqdm(self.files["trainval"]):
                 fname = ii + ".png"
@@ -226,7 +227,7 @@ class pascalVOCLoader(data.Dataset):
                 lbl = m.toimage(lbl, high=lbl.max(), low=lbl.min())
                 m.imsave(pjoin(target_path, fname), lbl)
 
-        assert expected == 9733, "unexpected dataset sizes"
+        #assert expected == 9733, "unexpected dataset sizes"
 
 
 # Leave code for debugging purposes

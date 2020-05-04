@@ -49,6 +49,11 @@ def train(cfg, writer, logger):
         augmentations=data_aug,
     )
 
+    # print("debug")
+    # print(cfg["data"]["train_split"])
+    # print(cfg["data"]["img_rows"])
+    # print(cfg["data"]["img_cols"])
+    
     v_loader = data_loader(
         data_path,
         is_transform=True,
@@ -117,6 +122,8 @@ def train(cfg, writer, logger):
     while i <= cfg["training"]["train_iters"] and flag:
         for (images, labels) in trainloader:
             i += 1
+            #print(images.size())
+
             start_ts = time.time()
             scheduler.step()
             model.train()
@@ -124,10 +131,11 @@ def train(cfg, writer, logger):
             labels = labels.to(device)
 
             optimizer.zero_grad()
+            images = images.expand(-1,3,-1,-1)
             outputs = model(images)
 
             loss = loss_fn(input=outputs, target=labels)
-
+            #print("Count : %d" %i)
             loss.backward()
             optimizer.step()
 
@@ -156,6 +164,7 @@ def train(cfg, writer, logger):
                         images_val = images_val.to(device)
                         labels_val = labels_val.to(device)
 
+                        images_val = images_val.expand(-1,3,-1,-1)
                         outputs = model(images_val)
                         val_loss = loss_fn(input=outputs, target=labels_val)
 
@@ -182,6 +191,7 @@ def train(cfg, writer, logger):
                 running_metrics_val.reset()
 
                 if score["Mean IoU : \t"] >= best_iou:
+
                     best_iou = score["Mean IoU : \t"]
                     state = {
                         "epoch": i + 1,

@@ -6,11 +6,11 @@ data:
     val_split: val
     img_rows: 'same'
     img_cols: 'same'
-    path: /home/robotics/neJo/VOCdevkit/VOC2012/
+    path: /home/robotics/neJo/Bone_loss/
     sbd_path: /home/robotics/neJo/benchmark_RELEASE/
 training:
     train_iters: 300000
-    batch_size: 1
+    batch_size: 100
     val_interval: 1000
     n_workers: 16
     print_interval: 50

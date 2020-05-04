@@ -9,7 +9,7 @@ data:
     path: /home/robotics/neJo/VOCdevkit/VOC2012/
     sbd_path: /home/robotics/neJo/benchmark_RELEASE/
 training:
-    train_iters: 300000
+    train_iters: 3000
     batch_size: 1
     val_interval: 1000
     n_workers: 16
